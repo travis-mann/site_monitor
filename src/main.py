@@ -1,33 +1,27 @@
 # --- imports ---
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from selenium.webdriver.common.by import By
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(PROJECT_DIR)
 
 from run_check import run_check
 from check_site import check_site
 from common.send_email import send_email
 from common.exception_to_email import exception_to_email
+from site_check_config import SiteCheckConfig
 
 
 # --- glob ---
-SENDER = os.environ["SENDER"]
-SITE = os.environ["SITE"]
-SITE_NAME = os.environ["SITE_NAME"]
-USERNAME_ID = os.environ["USERNAME_ID"]
-PASSWORD_ID = os.environ["PASSWORD_ID"]
-EXPECTED_ELEMENT_ID = os.environ["PASSWORD_ID"]
-SENDER_EMAIL_PASSWORD = os.environ["EMAIL_PASSWORD"]
-RECEIVERS = [SENDER]
+scf = SiteCheckConfig(os.path.join(PROJECT_DIR, "config.json"))
 
 
 # --- func ---
-@exception_to_email(f"{SITE_NAME} Monitoring Tool", SENDER, RECEIVERS, SENDER_EMAIL_PASSWORD)
+@exception_to_email(f"{scf.site_name} Monitoring Tool", scf.sender, scf.receivers, scf.email_password)
 def main():
     print("starting script")
-    result = run_check(check_site, 9*60, SITE, (By.ID, USERNAME_ID), (By.ID, PASSWORD_ID), (By.ID, EXPECTED_ELEMENT_ID))
+    result = run_check(check_site, int(scf.run_frequency_sec * 0.95), scf)
     status = "FAIL" if result else "PASS"
-    send_email(f"{SITE_NAME} External Check {status}", ", ".join(result), SENDER, RECEIVERS, sender_password=SENDER_EMAIL_PASSWORD)
+    send_email(f"{scf.site_name} External Check {status}", ", ".join(result), scf.sender, scf.receivers, sender_password=scf.email_password)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,13 @@
+{
+  "sender": "",
+  "site": "",
+  "site_name": "",
+  "username": "",
+  "password": "",
+  "username_id": "",
+  "password_id": "",
+  "expected_element_id": "",
+  "email_password": "",
+  "max_check_attempts": 3,
+  "run_frequency_sec": 600
+}

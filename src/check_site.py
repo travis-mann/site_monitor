@@ -3,12 +3,14 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException
-from run_check import run_check, RunCheckTimeoutException
-from pyvirtualdisplay import Display
+# from pyvirtualdisplay import Display
 
 import os
 from typing import List
 import shutil
+
+from run_check import run_check, RunCheckTimeoutException
+from site_check_config import SiteCheckConfig
 
 
 # --- glob ---
@@ -66,12 +68,12 @@ def delete_profile_data():
     print("profile data deleted")
 
 
-def check_site(site: str, username_locator: (By, str), password_locator: (By, str), expected_element_locator: (By, str)):
-    max_attempts: int = 3
+def check_site(scf: SiteCheckConfig):
     result = []
-    for attempt in range(max_attempts):
+    for attempt in range(scf.max_check_attempts):
         try:
-            result = run_check(check_site_single_attempt, 2 * 60, site, username_locator, password_locator, expected_element_locator)
+            check_time_sec = int(scf.run_frequency_sec * 0.9 / scf.max_check_attempts)
+            result = run_check(check_site_single_attempt, check_time_sec, scf)
         except RunCheckTimeoutException:
             result = ["check exceeded timeout"]
         if not result:
@@ -79,28 +81,27 @@ def check_site(site: str, username_locator: (By, str), password_locator: (By, st
     return result
 
 
-def check_site_single_attempt(site: str, username_locator: (By, str), password_locator: (By, str), expected_element_locator: (By, str)) -> List[str]:
+def check_site_single_attempt(scf: SiteCheckConfig) -> List[str]:
     """
     purpose: checks if a site is accessible
     :return:
     """
-    print("creating driver")
     driver = get_driver()
     driver.implicitly_wait(20)
 
-    print(f"going to {site}")
-    driver.get(site)
+    print(f"going to {scf.site}")
+    driver.get(scf.site)
 
     print("entering credentials")
-    driver.find_element(By.ID, "emailInput").send_keys(os.environ["USERNAME"])
-    driver.find_element(By.ID, "passwordInput").send_keys(os.environ["PASSWORD"] + Keys.ENTER)
+    driver.find_element(By.ID, scf.username_id).send_keys(scf.username)
+    driver.find_element(By.ID, scf.password_id).send_keys(scf.password + Keys.ENTER)
 
     print("checking for expected element")
     try:
-        driver.find_element(*expected_element_locator)
+        driver.find_element(By.ID, scf.expected_element_id)
         print("expected element found")
         driver.quit()
         return []
     except TimeoutException:
         driver.quit()
-        return [f"failed to reach {site} after login"]
+        return [f"failed to reach {scf.site_name} after login"]
