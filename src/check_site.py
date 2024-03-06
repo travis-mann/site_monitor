@@ -1,8 +1,10 @@
 from selenium.webdriver import Chrome, ChromeOptions
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException
 from run_check import run_check, RunCheckTimeoutException
+from pyvirtualdisplay import Display
 
 import os
 from typing import List
@@ -19,6 +21,12 @@ def get_driver():
     purpose: create selenium driver
     :return:
     """
+    # create virtual display for raspberry pi
+    if os.name != "nt":
+        print("creating virtual display")
+        # display = Display(visible=1, size=(800, 600))
+        # display.start()
+
     print("creating chrome driver")
     max_attempts = 3
     for attempt in range(max_attempts):
@@ -32,7 +40,11 @@ def get_driver():
         try:
             options = ChromeOptions()
             options.add_argument(f"--user-data-dir={PROFILE_DATA_FOLDER}")
-            return Chrome()
+            print(f"os name: {os.name}")
+            if os.name == "nt":  # selenium manager will find driver
+                return Chrome()
+            else:  # need to use custom driver on raspberry pi
+                return Chrome(service=Service(executable_path="/usr/lib/chromium-browser/chromedriver"))
         except Exception as e:
             print(f"failed to create driver due to {type(e)}: {e}")
             if attempt == max_attempts:
@@ -41,7 +53,10 @@ def get_driver():
 
 def kill_drivers():
     print("killing all driver processes")
-    os.system("taskkill /F /IM chromedriver.exe")
+    if os.name == "nt":
+        os.system("taskkill /F /IM chromedriver.exe")
+    else:
+        os.system("pkill chromedriver")
     print("processes killed")
 
 
