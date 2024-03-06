@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException
-# from pyvirtualdisplay import Display
+from pyvirtualdisplay import Display
 
 import os
 from typing import List
@@ -26,8 +26,8 @@ def get_driver():
     # create virtual display for raspberry pi
     if os.name != "nt":
         print("creating virtual display")
-        # display = Display(visible=1, size=(800, 600))
-        # display.start()
+        display = Display(visible=0, size=(800, 600))
+        display.start()
 
     print("creating chrome driver")
     max_attempts = 3
