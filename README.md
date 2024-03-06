@@ -7,6 +7,7 @@ Purpose: Monitor Site Availability from a Raspberry PI
 2. Run the following commands
 ```cmd
 sudo apt-get install chromium-chromedriver
+sudo apt-get install chromium-browser
 git clone https://github.com/travis-mann/site_monitor
 cd site_monitor
 python -m venv ./venv
@@ -16,7 +17,7 @@ pip install -r requirements.txt
 ```
 
 3. Set the following environment variables:
-- SENDER: Email address to send and recieve monitoring notifications
+- SENDER: Email address to send and receive monitoring notifications
 - SITE: Site URL
 - SITE_NAME: Informal website name for logging and notifications
 - USERNAME_ID: element id for username input field
