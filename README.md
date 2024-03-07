@@ -8,7 +8,7 @@ Purpose: Monitor Site Availability from a Raspberry PI
 ```cmd
 sudo apt-get install chromium-chromedriver
 sudo apt-get install chromium-browser
-sudo apt-get install xvfb xserver-xephyr vnc4server
+sudo apt-get install xvfb
 git clone https://github.com/travis-mann/site_monitor
 cd site_monitor
 python -m venv ./venv
