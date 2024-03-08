@@ -27,6 +27,7 @@ pip install -r requirements.txt
 - "password_id": element id for password input field
 - "expected_element_id": element id for an expected element post login
 - "email_password": Email app password for smtp auth, https://support.google.com/mail/answer/185833?hl=en
+- "alert_subject_prefix": Optional prefix to include in email subjects for new outages detected. Possible use case: Trigger text alerts for manual intervention.
 - "max_check_attempts": Number of retries before reporting a failure
 - "run_frequency_sec": Seconds between runs
 
