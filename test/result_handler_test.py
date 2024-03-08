@@ -45,7 +45,6 @@ class TestResultHandler(unittest.TestCase):
 
     def test_alert_subject(self):
         subject = self.get_subject_from_result_scenario([], ["test_failure"])
-        expected_str_in_subject = self.mock_scf.alert_subject_prefix
         for expected_str_in_subject in [self.mock_scf.alert_subject_prefix, ResultHandler.fail_str]:
             self.assertEqual(len(expected_str_in_subject) > 0, True)
             self.assertIn(expected_str_in_subject, subject)
