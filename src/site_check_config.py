@@ -17,4 +17,5 @@ class SiteCheckConfig:
         self.email_password = config["email_password"]
         self.run_frequency_sec = config["run_frequency_sec"]
         self.max_check_attempts = config["max_check_attempts"]
+        self.log_retention_period_days = config["log_retention_period_days"]
         self.receivers = [self.sender]

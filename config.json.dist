@@ -9,5 +9,6 @@
   "expected_element_id": "",
   "email_password": "",
   "max_check_attempts": 3,
-  "run_frequency_sec": 600
+  "run_frequency_sec": 600,
+  "log_retention_period_days": 30
 }
