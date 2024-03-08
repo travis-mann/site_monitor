@@ -19,13 +19,17 @@ PROFILE_DATA_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), "
 
 
 # --- func ---
-def get_driver():
+def is_windows() -> bool:
+    return os.name == "nt"
+
+
+def get_driver() -> Chrome:
     """
     purpose: create selenium driver
     :return:
     """
     # create virtual display for raspberry pi
-    if os.name != "nt":
+    if not is_windows():
         logging.info("creating virtual display")
         display = Display(visible=0, size=(800, 600))
         display.start()
@@ -44,7 +48,7 @@ def get_driver():
             options = ChromeOptions()
             options.add_argument(f"--user-data-dir={PROFILE_DATA_FOLDER}")
             logging.info(f"os name: {os.name}")
-            if os.name == "nt":  # selenium manager will find driver
+            if is_windows():  # selenium manager will find driver
                 return Chrome()
             else:  # need to use custom driver on raspberry pi
                 return Chrome(service=Service(executable_path="/usr/lib/chromium-browser/chromedriver"))
@@ -54,31 +58,39 @@ def get_driver():
                 raise e
 
 
-def kill_drivers():
+def kill_drivers() -> None:
     logging.warning("killing all driver processes")
-    if os.name == "nt":
+    if is_windows():
         os.system("taskkill /F /IM chromedriver.exe")
+        os.system("taskkill /F /IM chrome.exe")
     else:
         os.system("pkill chromedriver")
+        os.system("pkill chrome")
     logging.warning("processes killed")
 
 
-def delete_profile_data():
+def delete_profile_data() -> None:
     logging.warning("deleting profile data")
     shutil.rmtree(PROFILE_DATA_FOLDER)
     logging.warning("profile data deleted")
 
 
-def check_site(scf: SiteCheckConfig):
+def check_site(scf: SiteCheckConfig) -> List[str]:
     result = []
     for attempt in range(scf.max_check_attempts):
+        logging.info(f"starting check_site attempt {attempt}")
         try:
             check_time_sec = int(scf.run_frequency_sec * 0.9 / scf.max_check_attempts)
             result = run_check(check_site_single_attempt, check_time_sec, scf)
         except RunCheckTimeoutException:
+            logging.info(f"check_site attempt {attempt} timed out")
+            kill_drivers()
             result = ["check exceeded timeout"]
         if not result:
+            logging.info(f"check_site attempt {attempt} passed")
             return result
+        logging.info(f"check_site attempt {attempt} failed")
+    logging.info(f"all {scf.max_check_attempts} attempts for check_site exhausted, returning final result")
     return result
 
 

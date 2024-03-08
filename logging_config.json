@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {
+    "simple": {
+      "format": "[%(asctime)s PID%(process)d %(module)s L%(lineno)d %(levelname)s] %(msg)s",
+      "datefmt": "%Y-%m-%dT%H:%M:%S%z"
+    },
+    "json": {
+      "()": "common.json_formatter.JSONFormatter",
+      "fmt_keys": {
+        "level": "levelname",
+        "timestamp": "timestamp",
+        "message": "message",
+        "name": "name",
+        "module": "module",
+        "funcName": "funcName",
+        "lineno": "lineno",
+        "thread": "thread",
+        "threadName": "threadName",
+        "process": "process",
+        "processName": "processName"
+      }
+    }
+  },
+  "handlers": {
+    "stdout": {
+      "class": "logging.StreamHandler",
+      "level": "INFO",
+      "formatter": "simple",
+      "stream": "ext://sys.stdout"
+    },
+    "file": {
+      "class": "logging.handlers.TimedRotatingFileHandler",
+      "level": "INFO",
+      "formatter": "json",
+      "filename": "logs/site_monitor.jsonl",
+      "when": "midnight",
+      "backupCount": 30
+    }
+  },
+  "loggers": {
+    "root": {
+      "level": "DEBUG",
+      "handlers": [
+        "stdout",
+        "file"
+      ]
+    }
+  }
+}

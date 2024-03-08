@@ -31,3 +31,7 @@ pip install -r requirements.txt
 - "run_frequency_sec": Seconds between runs
 
 4. Configure a cronjob to run main.py with the desired monitoring frequency.
+
+
+## Additional Notes
+- Log retension is 30 days by default and configured with logging_config.json > "handlers" > "file" > "backupCount"
