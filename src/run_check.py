@@ -1,4 +1,5 @@
 from multiprocessing import Process, Queue
+import logging
 
 
 class RunCheckTimeoutException(Exception):
@@ -16,13 +17,13 @@ def run_check(func: callable, timeout_sec: int, *args, **kwargs):
     """
     result_queue = Queue()
     child_process = Process(target=worker, args=(func, result_queue, *args), kwargs=kwargs)
-    print(f"starting child process for {func.__name__} with {timeout_sec} sec timeout")
+    logging.info(f"starting child process for {func.__name__} with {timeout_sec} sec timeout")
     child_process.start()
     child_process.join(timeout_sec)
 
     # timeout occurred
     if child_process.is_alive():
-        print(f"{func.__name__} exceeded {timeout_sec} sec timeout. Terminating.")
+        logging.info(f"{func.__name__} exceeded {timeout_sec} sec timeout. Terminating.")
         child_process.terminate()
         raise RunCheckTimeoutException
 

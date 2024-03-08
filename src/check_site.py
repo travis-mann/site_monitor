@@ -8,6 +8,7 @@ from pyvirtualdisplay import Display
 import os
 from typing import List
 import shutil
+import logging
 
 from run_check import run_check, RunCheckTimeoutException
 from site_check_config import SiteCheckConfig
@@ -25,11 +26,11 @@ def get_driver():
     """
     # create virtual display for raspberry pi
     if os.name != "nt":
-        print("creating virtual display")
+        logging.info("creating virtual display")
         display = Display(visible=0, size=(800, 600))
         display.start()
 
-    print("creating chrome driver")
+    logging.info("creating chrome driver")
     max_attempts = 3
     for attempt in range(max_attempts):
         # attempt to resolve environment issues
@@ -42,30 +43,30 @@ def get_driver():
         try:
             options = ChromeOptions()
             options.add_argument(f"--user-data-dir={PROFILE_DATA_FOLDER}")
-            print(f"os name: {os.name}")
+            logging.info(f"os name: {os.name}")
             if os.name == "nt":  # selenium manager will find driver
                 return Chrome()
             else:  # need to use custom driver on raspberry pi
                 return Chrome(service=Service(executable_path="/usr/lib/chromium-browser/chromedriver"))
         except Exception as e:
-            print(f"failed to create driver due to {type(e)}: {e}")
+            logging.info(f"failed to create driver due to {type(e)}: {e}")
             if attempt == max_attempts:
                 raise e
 
 
 def kill_drivers():
-    print("killing all driver processes")
+    logging.warning("killing all driver processes")
     if os.name == "nt":
         os.system("taskkill /F /IM chromedriver.exe")
     else:
         os.system("pkill chromedriver")
-    print("processes killed")
+    logging.warning("processes killed")
 
 
 def delete_profile_data():
-    print("deleting profile data")
+    logging.warning("deleting profile data")
     shutil.rmtree(PROFILE_DATA_FOLDER)
-    print("profile data deleted")
+    logging.warning("profile data deleted")
 
 
 def check_site(scf: SiteCheckConfig):
@@ -89,17 +90,17 @@ def check_site_single_attempt(scf: SiteCheckConfig) -> List[str]:
     driver = get_driver()
     driver.implicitly_wait(20)
 
-    print(f"going to {scf.site}")
+    logging.info(f"going to {scf.site}")
     driver.get(scf.site)
 
-    print("entering credentials")
+    logging.info("entering credentials")
     driver.find_element(By.ID, scf.username_id).send_keys(scf.username)
     driver.find_element(By.ID, scf.password_id).send_keys(scf.password + Keys.ENTER)
 
-    print("checking for expected element")
+    logging.info("checking for expected element")
     try:
         driver.find_element(By.ID, scf.expected_element_id)
-        print("expected element found")
+        logging.info("expected element found")
         driver.quit()
         return []
     except TimeoutException:
