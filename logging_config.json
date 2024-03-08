@@ -3,7 +3,7 @@
   "disable_existing_loggers": false,
   "formatters": {
     "simple": {
-      "format": "[%(asctime)s PID%(process)d %(module)s L%(lineno)d %(levelname)s] %(msg)s",
+      "format": "[%(asctime)s %(levelname)s %(process)d %(module)s L%(lineno)d] %(msg)s",
       "datefmt": "%Y-%m-%dT%H:%M:%S%z"
     },
     "json": {
