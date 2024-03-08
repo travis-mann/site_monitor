@@ -1,5 +1,6 @@
-from src.common.send_email import send_email
 import logging
+import traceback
+from src.common.send_email import send_email
 
 
 def exception_to_email(name: str, sender: str, receivers: list, sender_password: str) -> callable:
@@ -11,7 +12,7 @@ def exception_to_email(name: str, sender: str, receivers: list, sender_password:
             try:
                 return func()
             except Exception as e:
-                logging.error(f"failed to run {name} due to {type(e)}: {e}")
+                logging.error(f"failed to run {name} due to {type(e)}: {e}\n{traceback.format_exc()}")
                 send_email(f"Failed to run {name}", "", sender, receivers, sender_password)
         return wrapper
 

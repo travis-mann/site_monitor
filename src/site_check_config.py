@@ -15,6 +15,7 @@ class SiteCheckConfig:
         self.password_id = config["password_id"]
         self.expected_element_id = config["expected_element_id"]
         self.email_password = config["email_password"]
+        self.alert_subject_prefix = config["alert_subject_prefix"]
         self.run_frequency_sec = config["run_frequency_sec"]
         self.max_check_attempts = config["max_check_attempts"]
         self.receivers = [self.sender]

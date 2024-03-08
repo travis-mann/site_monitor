@@ -9,19 +9,20 @@ init_root_logger()
 
 from run_check import run_check
 from check_site import check_site
-from common.send_email import send_email
+from result_handler import ResultHandler
 from site_check_config import SiteCheckConfig
 from common.exception_to_email import exception_to_email
 
-scf = SiteCheckConfig(os.path.join(PROJECT_DIR, "config.json"))
+SCF = SiteCheckConfig(os.path.join(PROJECT_DIR, "config.json"))
 
 
-@exception_to_email(f"{scf.site_name} Monitoring Tool", scf.sender, scf.receivers, scf.email_password)
+@exception_to_email(f"{SCF.site_name} Monitoring Tool", SCF.sender, SCF.receivers, SCF.email_password)
 def main():
     logging.info("starting script")
-    result = run_check(check_site, int(scf.run_frequency_sec * 0.95), scf)
-    status = "FAIL" if result else "PASS"
-    send_email(f"{scf.site_name} External Check {status}", ", ".join(result), scf.sender, scf.receivers, sender_password=scf.email_password)
+    result = run_check(check_site, int(SCF.run_frequency_sec * 0.95), SCF)
+    logging.info(f"check results: {result}")
+    ResultHandler.notify_user_with_result(result, SCF)
+    ResultHandler.store_result(result)
     logging.info("done")
 
 
