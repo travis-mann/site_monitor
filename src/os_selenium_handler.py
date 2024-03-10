@@ -64,7 +64,7 @@ class LinuxSeleniumHander(OSSeleniumHandler):
 
     @staticmethod
     def _virtual_display_started() -> bool:
-        return os.popen("ps").read().count('Xfvb') > 0
+        return os.popen("ps").read().count('Xvfb') > 0
 
     @staticmethod
     def _start_virtual_display() -> None:
