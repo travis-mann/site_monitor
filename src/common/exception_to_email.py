@@ -13,7 +13,9 @@ def exception_to_email(name: str, sender: str, receivers: list, sender_password:
                 return func()
             except Exception as e:
                 logging.error(f"failed to run {name} due to {type(e)}: {e}\n{traceback.format_exc()}")
-                send_email(f"Failed to run {name}", "", sender, receivers, sender_password)
+                subject = f"Failed to run {name}"
+                send_email(subject, "", sender, receivers, sender_password)
+                logging.info(f'email notification sent with subject "{subject}"')
         return wrapper
 
     return decorator

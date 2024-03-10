@@ -9,6 +9,7 @@
   "expected_element_id": "",
   "email_password": "",
   "alert_subject_prefix": "",
+  "screenshots": false,
   "max_check_attempts": 3,
   "run_frequency_sec": 600
 }

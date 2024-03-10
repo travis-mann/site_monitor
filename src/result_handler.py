@@ -22,6 +22,7 @@ class ResultHandler:
         subject = ResultHandler._get_subject(is_site_accessible, is_new_success, is_new_failure, scf)
         body = ", ".join(check_failure_strs)
         send_email(subject, body, scf.sender, scf.receivers, sender_password=scf.email_password)
+        logging.info(f'email notification sent with subject "{subject}"')
 
     @staticmethod
     def store_result(check_failure_strs: List[str]) -> None:
