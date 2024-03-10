@@ -69,7 +69,7 @@ class LinuxSeleniumHander(OSSeleniumHandler):
     @staticmethod
     def _start_virtual_display() -> None:
         logging.info("creating virtual display")
-        display = Display(visible=0, size=(800, 600))
+        display = Display(visible=0, size=(1920, 1080))
         display.start()
         logging.info("virtual display created")
 
