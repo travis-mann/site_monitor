@@ -37,8 +37,6 @@ class OSSeleniumHandler:
 
 
 class LinuxSeleniumHander(OSSeleniumHandler):
-    _virtual_display_started = False
-
     @staticmethod
     def is_this_os() -> bool:
         return os.name == "posix"
@@ -50,7 +48,7 @@ class LinuxSeleniumHander(OSSeleniumHandler):
 
     @staticmethod
     def get_chrome_driver():
-        if not LinuxSeleniumHander._virtual_display_started:
+        if not LinuxSeleniumHander._virtual_display_started():
             LinuxSeleniumHander._start_virtual_display()
         options = LinuxSeleniumHander.get_chrome_driver_options()
         return Chrome(
@@ -65,12 +63,15 @@ class LinuxSeleniumHander(OSSeleniumHandler):
         logging.warning("profile data deleted")
 
     @staticmethod
-    def _start_virtual_display():
+    def _virtual_display_started() -> bool:
+        return os.popen("ps").read().count('Xfvb') > 0
+
+    @staticmethod
+    def _start_virtual_display() -> None:
         logging.info("creating virtual display")
         display = Display(visible=0, size=(800, 600))
         display.start()
         logging.info("virtual display created")
-        LinuxSeleniumHander._virtual_display_started = True
 
 
 class WindowsSeleniumHandler(OSSeleniumHandler):
