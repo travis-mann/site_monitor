@@ -89,11 +89,14 @@ def check_site(scf: SiteCheckConfig) -> List[str]:
             result = run_check(check_site_single_attempt, check_time_sec, os_selenium_handler, scf)
         except RunCheckTimeoutException:
             logging.warning(f"check_site attempt {attempt} timed out")
-            os_selenium_handler.kill_drivers()
             result = ["check exceeded timeout"]
+
         if not result:
             logging.info(f"check_site attempt {attempt} passed")
             return result
         logging.warning(f"check_site attempt {attempt} failed")
+        os_selenium_handler.kill_drivers()
+        os_selenium_handler.delete_profile_data()
+
     logging.warning(f"all {scf.max_check_attempts} attempts for check_site exhausted, returning final result")
     return result
